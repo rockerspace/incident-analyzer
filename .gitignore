@@ -1,0 +1,14 @@
+# Python
+python-agent/venv/
+python-agent/__pycache__/
+python-agent/chroma_db/
+python-agent/.env
+*.pyc
+
+# Java
+spring-backend/build/
+spring-backend/.gradle/
+*.class
+
+# Mac
+.DS_Store
