@@ -1,13 +1,115 @@
-<html>
-    <h1>My File in Cloud Object Storage</h1>
-<p></p>
-<p>I just learned how to work with Cloud Object Storage, including -</p> 
-<ul>
-    <li>Creating Buckets</li>
-    <li>Adding Objects to them</li>
-    <li>and Sharing them with others</li>
-</ul>
-<p> - in this Introduction to Cloud course from IBM.</b></p>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Incident Analyzer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0a0b;--surface:#111114;--surface2:#18181c;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);--text:#f0eff4;--muted:#6b6a74;--accent:#7c6af7;--accent2:#4fd1c5;--danger:#f87171;--success:#4ade80;--warn:#fbbf24;--mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:3rem 1.5rem 6rem}
+.glow{position:fixed;top:-200px;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(124,106,247,0.12) 0%,transparent 70%);pointer-events:none;z-index:0}
+.wrap{position:relative;z-index:1;width:100%;max-width:720px}
+header{margin-bottom:2.5rem}
+.logo-row{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.logo-icon{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:16px}
+h1{font-size:22px;font-weight:500;letter-spacing:-0.02em;color:var(--text)}
+.tagline{font-size:14px;color:var(--muted);margin-left:42px}
+.form-panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:1.5rem}
+.input-label{font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:block}
+textarea{width:100%;min-height:110px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-family:var(--sans);font-size:14px;color:var(--text);resize:vertical;transition:border-color 0.15s;line-height:1.6}
+textarea::placeholder{color:var(--muted)}
+textarea:focus{outline:none;border-color:var(--accent)}
+.bottom-row{display:flex;align-items:center;justify-content:space-between;margin-top:12px;gap:12px;flex-wrap:wrap}
+.endpoint{font-family:var(--mono);font-size:11px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 10px}
+button{font-family:var(--sans);font-size:14px;font-weight:500;padding:9px 22px;border-radius:8px;cursor:pointer;border:none;transition:all 0.15s;background:var(--accent);color:#fff;display:flex;align-items:center;gap:7px}
+button:hover{opacity:0.88;transform:translateY(-1px)}
+button:disabled{opacity:0.35;cursor:not-allowed;transform:none}
+.spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.65s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.error-box{background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.25);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--danger);margin-bottom:1.5rem;display:none;line-height:1.6}
+.error-box.show{display:block}
+.results{display:none;flex-direction:column;gap:1rem}
+.results.show{display:flex}
+.stat-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:0.5rem}
+.stat{font-size:12px;padding:4px 12px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);display:flex;align-items:center;gap:5px}
+.stat .dot{width:6px;height:6px;border-radius:50%;background:var(--accent2)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.25rem 1.5rem}
+.card-header{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.card-icon{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.icon-purple{background:rgba(124,106,247,0.15);color:var(--accent)}
+.icon-teal{background:rgba(79,209,197,0.15);color:var(--accent2)}
+.icon-warn{background:rgba(251,191,36,0.15);color:var(--warn)}
+.icon-green{background:rgba(74,222,128,0.15);color:var(--success)}
+.card-title{font-size:12px;font-weight:500;letter-spacing:0.07em;text-transform:uppercase;color:var(--muted)}
+.rc-text{font-size:14px;line-height:1.8;color:var(--text);white-space:pre-wrap}
+.action-list{display:flex;flex-direction:column}
+.action-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;color:var(--text);line-height:1.6}
+.action-item:last-child{border-bottom:none;padding-bottom:0}
+.action-item:first-child{padding-top:0}
+.action-num{font-family:var(--mono);font-size:12px;color:var(--accent);min-width:20px;margin-top:2px}
+.log-entry{font-family:var(--mono);font-size:12px;line-height:1.6;padding:10px 12px;margin-bottom:8px;background:var(--surface2);border-radius:8px;border-left:2px solid var(--danger);color:#c9c8d4;word-break:break-all}
+.log-entry:last-child{margin-bottom:0}
+.log-level{color:var(--danger);font-weight:500}
+.log-ts{color:var(--muted)}
+.log-svc{color:var(--accent2)}
+.agent-chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:12px;padding:5px 12px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text);display:flex;align-items:center;gap:6px}
+.chip-dot{width:6px;height:6px;border-radius:50%;background:var(--success);box-shadow:0 0 6px var(--success)}
+</style>
+</head>
+<body>
+<div class="glow"></div>
+<div class="wrap">
+  <header>
+    <div class="logo-row">
+      <div class="logo-icon">&#9889;</div>
+      <h1>Incident Analyzer</h1>
+    </div>
+    <p class="tagline">AI-powered root cause analysis using LLM agents + RAG</p>
+  </header>
+  <div class="form-panel">
+    <label class="input-label" for="incident">Incident description</label>
+    <textarea id="incident" placeholder="e.g. Payment service is throwing 503 errors. Orders are failing. High error rate detected since last deployment."></textarea>
+    <div class="bottom-row">
+      <span class="endpoint">POST /api/v1/incidents/analyze</span>
+      <button id="btn" onclick="analyze()"><span id="btn-icon">&#8594;</span><span id="btn-label">Analyze</span></button>
+    </div>
+  </div>
+  <div class="error-box" id="err"></div>
+  <div class="results" id="results">
+    <div class="stat-bar" id="stats"></div>
+    <div class="card"><div class="card-header"><div class="card-icon icon-purple">&#127919;</div><span class="card-title">Root cause</span></div><div class="rc-text" id="rc"></div></div>
+    <div class="card"><div class="card-header"><div class="card-icon icon-teal">&#10003;</div><span class="card-title">Recommended actions</span></div><div class="action-list" id="actions"></div></div>
+    <div class="card"><div class="card-header"><div class="card-icon icon-warn">&#9654;</div><span class="card-title">Retrieved logs</span></div><div id="logs"></div></div>
+    <div class="card"><div class="card-header"><div class="card-icon icon-green">&#9672;</div><span class="card-title">Agent pipeline</span></div><div class="agent-chips" id="agents"></div></div>
+  </div>
+</div>
+<script>
+function parseLog(r){var m=r.match(/^(ERROR|WARN|INFO|DEBUG)\s+(\S+\s+\S+)\s+\[([^\]]+)\]\s+(.*)$/);if(!m)return'<span>'+r+'</span>';return'<span class="log-level">'+m[1]+'</span> <span class="log-ts">'+m[2]+'</span> <span class="log-svc">['+m[3]+']</span> '+m[4]}
+async function analyze(){
+  var desc=document.getElementById('incident').value.trim();
+  if(!desc)return;
+  var btn=document.getElementById('btn'),bl=document.getElementById('btn-label'),bi=document.getElementById('btn-icon'),err=document.getElementById('err'),res=document.getElementById('results');
+  btn.disabled=true;bi.className='spinner';bl.textContent='Analyzing...';err.classList.remove('show');res.classList.remove('show');
+  try{
+    var r=await fetch('http://localhost:8080/api/v1/incidents/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({incidentDescription:desc,humanApproved:true})});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    var d=await r.json();
+    document.getElementById('rc').textContent=d.root_cause||d.rootCause||'';
+    var actions=d.recommended_actions||d.recommendedActions||[];
+    document.getElementById('actions').innerHTML=actions.map(function(a,i){return'<div class="action-item"><span class="action-num">0'+(i+1)+'</span><span>'+a.replace(/^\d+\.\s*/,'').replace(/\*\*/g,'')+'</span></div>'}).join('');
+    var logs=d.retrieved_logs||d.retrievedLogs||[];
+    document.getElementById('logs').innerHTML=[...new Set(logs)].slice(0,5).map(function(l){return'<div class="log-entry">'+parseLog(l)+'</div>'}).join('');
+    var agents=d.agent_messages||d.agentMessages||[];
+    document.getElementById('agents').innerHTML=agents.map(function(a){return'<div class="chip"><span class="chip-dot"></span>'+a+'</div>'}).join('');
+    document.getElementById('stats').innerHTML='<div class="stat"><span class="dot"></span>'+agents.length+' agents</div><div class="stat"><span class="dot"></span>'+logs.length+' logs</div><div class="stat"><span class="dot"></span>'+actions.length+' actions</div>';
+    res.classList.add('show');
+  }catch(e){err.textContent='Could not reach backend. Make sure Spring Boot is running on port 8080. ('+e.message+')';err.classList.add('show');}
+  finally{btn.disabled=false;bi.className='';bi.textContent='\u2192';bl.textContent='Analyze';}
+}
+document.getElementById('incident').addEventListener('keydown',function(e){if(e.key==='Enter'&&(e.metaKey||e.ctrlKey))analyze();});
+</script>
 </body>
 </html>
