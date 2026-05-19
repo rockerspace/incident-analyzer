@@ -3,15 +3,15 @@ from dotenv import load_dotenv
 from typing import TypedDict, List, Annotated
 import operator
 
-from langchain_openai import ChatOpenAI
-from langchain.schema import HumanMessage, SystemMessage
+from langchain_groq import ChatGroq
+from langchain_core.messages import HumanMessage, SystemMessage
 from langgraph.graph import StateGraph, END
 
 from vector_store import get_retriever
 
 load_dotenv()
 
-llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+llm = ChatGroq(model="llama-3.1-8b-instant", temperature=0)
 retriever = get_retriever()
 
 class IncidentState(TypedDict):
